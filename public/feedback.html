@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback - BusGo</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav id="navbar">
+        <div class="logo">BusGo</div>
+        <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/feedback.html" class="nav-link">Feedback</a>
+            <a href="/login.html" class="nav-link" id="loginLink">Login</a>
+        </div>
+    </nav>
+
+    <main class="container">
+        <section class="feedback-form">
+            <h2>Share Your Experience</h2>
+            <form id="feedbackForm" onsubmit="submitFeedback(event)">
+                <div class="form-group">
+                    <label>Rating:</label>
+                    <div class="rating">
+                        <input type="radio" name="rating" value="5" id="star5" required>
+                        <label for="star5">★</label>
+                        <input type="radio" name="rating" value="4" id="star4">
+                        <label for="star4">★</label>
+                        <input type="radio" name="rating" value="3" id="star3">
+                        <label for="star3">★</label>
+                        <input type="radio" name="rating" value="2" id="star2">
+                        <label for="star2">★</label>
+                        <input type="radio" name="rating" value="1" id="star1">
+                        <label for="star1">★</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Comment:</label>
+                    <textarea name="comment" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit Feedback</button>
+            </form>
+        </section>
+
+        <section class="feedback-list">
+            <h2>Recent Feedbacks</h2>
+            <div id="feedbackList"></div>
+        </section>
+    </main>
+
+    <script src="js/feedback.js"></script>
+    <script>
+        async function submitFeedback(event) {
+            event.preventDefault();
+            const form = event.target;
+            const rating = form.rating.value;
+            const comment = form.comment.value;
+            
+            const result = await feedback.submit(rating, comment);
+            if (result) {
+                alert('Thank you for your feedback!');
+                form.reset();
+                loadFeedbacks();
+            }
+        }
+
+        async function loadFeedbacks() {
+            const feedbacks = await feedback.getFeedbacks();
+            const feedbackList = document.getElementById('feedbackList');
+            feedbackList.innerHTML = feedbacks.map(f => `
+                <div class="feedback-card">
+                    <div class="rating">${'★'.repeat(f.rating)}${'☆'.repeat(5-f.rating)}</div>
+                    <p>${f.comment}</p>
+                    <small>By ${f.user.name}</small>
+                </div>
+            `).join('');
+        }
+
+        loadFeedbacks();
+    </script>
+</body>
+</html>
